@@ -1,0 +1,96 @@
+---
+title: "Task 4: Naples Reef purple urchin data wrangling and visualization"
+author: "Mia Guarnieri"
+date: "10/29/2021"
+output: 
+  html_document: 
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+# Overview
+This code wrangles, analyzes, and visualizes data about the mean size of purple urchins in CONTROL (no giant kelp removal) and ANNUAL (annual kelp removal) sections of Naples Reef in 2010. This data was recorded by Santa Barbara Coastal Long Term Ecological Research program divers at five long-term kelp removal experiment sites. Shell diameter (size) was measured in centimeters.
+
+**Data citation:** Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b. 
+
+# Setup
+
+```{r}
+#attach packages
+library(tidyverse)
+library(here)
+library(janitor)
+library(kableExtra)
+library(lubridate)
+
+#read in the data
+urchins <- read.csv(here("Data", "urchins.csv"))
+
+#calling up the dtaframe for reference
+head(urchins)
+```
+
+# Data wrangling
+
+In a new object called purple_urchins_2010, urchins data is filtered to only include Naples Reef observations for purple urchins observed in 2010.
+
+```{r}
+purple_urchins_2010 <- urchins %>% 
+  filter(COMMON_NAME == "Purple Urchin") %>% #keeping only purple urchin observations
+  mutate(DATE = mdy(DATE), #converting DATE column to class "Date"
+         YEAR = year(DATE), #creating a new column with just the year 
+         SITE_FULL = case_when( #add a new column called SITE_FULL with full site names based on abbreviations from the SITE column
+           SITE == "NAPL" ~ "Naples Reef", 
+           SITE == "AQUE" ~ "Arroyo Quemado Reef",
+           SITE == "CARP" ~ "Carpinteria Reef",
+           SITE == "MOHK" ~ "Mohawk Reef",
+           SITE == "IVEE" ~ "Isla Vista Reef")) %>% 
+  filter(YEAR == 2010) %>%  #only keeping observations from within 2010
+  filter(SITE_FULL == "Naples Reef") #only keeping observations from Naples Reef
+```
+
+# Exploratory histograms and Q-Q plots
+
+```{r}
+# Histogram for the size distribution of purple urchins at Naples in 2010, separated by treatment (Control and Annual)
+ggplot(data = purple_urchins_2010, aes(x = SIZE)) +
+  geom_histogram() +
+  facet_wrap(~TREATMENT)
+
+# Q-Q plot for the size distribution of purple urchins at Naples in 2010, separated by treatment (Control and Annual)
+ggplot(data = purple_urchins_2010, aes(sample = SIZE)) +
+  geom_qq() +
+  facet_wrap(~TREATMENT)
+```
+
+## Takeaway
+
+Histograms for both control and treatment purple urchin sizes is slightly skewed to the right, with most of the sizes (the mode) being between 3 and 4 cm and a maximum size of 7 cm. The q-q plot is also shifted to the right, which is consistent with what is seen in the histogram. The spread of the data between control and treatment samples appears to be consistent.
+
+# Data table of purple urchin counts by treatment
+
+The following data table presents summary statistics for purple urchin sizes at Naples Reef in 2010, including mean, median, standard deviation, and sample size. These data are grouped by treatment: either annual kelp removal (ANNUAL), or no kelp removal (CONTROL).
+
+```{r}
+#getting the summary statistics
+purple_urchin_stats <- urchins %>% #start with the urchins data
+  group_by(TREATMENT) %>% #group our table by treatment
+  summarize(mean = mean(SIZE), #create a column for the mean of urchin sizes
+            median = median(SIZE), #create a column for the median of urchin sizes
+            sd = sd(SIZE), #create a column for the standard deviation of urchin sizes
+            n = n()) #create a column for the sample size of urchin sizes
+
+#creating a visually pleasing table
+purple_urchin_stats_table <- purple_urchin_stats %>% 
+  kable(digits = c(1, 1, 1, 1, 5), #setting the number of digits for each column; similar to `round()`)
+        col.names = c("Treatment", "Mean (cm)", "Median (cm)", "Standard Deviation (cm)", "Sample Size"), #naming columns
+        caption = "Summary statistics for the diameter (size) of purple sea urchins recorded by Santa Barbara Coastal Long Term Ecological Research program divers at the Naples Reef kelp removal experiment site in 2010.", #giving the table a caption above
+        align = "lcccc") %>%  #aligning the values centrally except for the species column (left aligned)
+  kable_styling(full_width = FALSE, position = "center") #setting it to not take up the full page width and be center aligned
+  
+purple_urchin_stats_table #calling up the table for reference
+```
+

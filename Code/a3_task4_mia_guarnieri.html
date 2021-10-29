@@ -176,7 +176,7 @@ pre code {
 
 <div id="overview" class="section level1" number="1">
 <h1 number="1"><span class="header-section-number">1</span> Overview</h1>
-<p>This code wrangles, analyzes, and visualizes data about the mean size of purple urchins in CONTROL (no giant kelp removal) and ANNUAL (annual kelp removal) sections of Naples Reef in 2010. This data was recorded by Santa Barbara Coastal Long Term Ecological Research program divers at five long-term kelp removal experiment sites. Shell diameter (size) was measured in centimeters.</p>
+<p>This code wrangles, analyzes, and visualizes data about the mean size of purple urchins in CONTROL (no giant kelp removal) and ANNUAL (annual kelp removal) treatment groups of Naples Reef in 2010. This data was recorded by Santa Barbara Coastal Long Term Ecological Research program divers at five long-term kelp removal experiment sites. Shell diameter (size) was measured in centimeters.</p>
 <p><strong>Data citation:</strong> Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. <a href="https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b" class="uri">https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b</a>.</p>
 </div>
 <div id="setup" class="section level1" number="2">
@@ -215,10 +215,27 @@ head(urchins)</code></pre>
            SITE == &quot;MOHK&quot; ~ &quot;Mohawk Reef&quot;,
            SITE == &quot;IVEE&quot; ~ &quot;Isla Vista Reef&quot;)) %&gt;% 
   filter(YEAR == 2010) %&gt;%  #only keeping observations from within 2010
-  filter(SITE_FULL == &quot;Naples Reef&quot;) #only keeping observations from Naples Reef</code></pre>
+  filter(SITE_FULL == &quot;Naples Reef&quot;) #only keeping observations from Naples Reef
+
+head(purple_urchins_2010) #calling up the dataframe for reference</code></pre>
+<pre><code>##         DATE SITE TREATMENT SIZE               SCIENTIFIC_NAME   COMMON_NAME
+## 1 2010-01-28 NAPL    ANNUAL  2.5 Strongylocentrotus purpuratus Purple Urchin
+## 2 2010-01-28 NAPL    ANNUAL  2.5 Strongylocentrotus purpuratus Purple Urchin
+## 3 2010-01-28 NAPL    ANNUAL  2.5 Strongylocentrotus purpuratus Purple Urchin
+## 4 2010-01-28 NAPL    ANNUAL  2.5 Strongylocentrotus purpuratus Purple Urchin
+## 5 2010-01-28 NAPL    ANNUAL  2.5 Strongylocentrotus purpuratus Purple Urchin
+## 6 2010-01-28 NAPL    ANNUAL  2.5 Strongylocentrotus purpuratus Purple Urchin
+##   YEAR   SITE_FULL
+## 1 2010 Naples Reef
+## 2 2010 Naples Reef
+## 3 2010 Naples Reef
+## 4 2010 Naples Reef
+## 5 2010 Naples Reef
+## 6 2010 Naples Reef</code></pre>
 </div>
 <div id="exploratory-histograms-and-q-q-plots" class="section level1" number="4">
 <h1 number="4"><span class="header-section-number">4</span> Exploratory histograms and Q-Q plots</h1>
+<p>These plots explore the spread of purple urchin sizes at Naples Reef in 2010 for both treatments.</p>
 <pre class="r"><code># Histogram for the size distribution of purple urchins at Naples in 2010, separated by treatment (Control and Annual)
 ggplot(data = purple_urchins_2010, aes(x = SIZE)) +
   geom_histogram() +
@@ -247,7 +264,7 @@ purple_urchin_stats &lt;- urchins %&gt;% #start with the urchins data
 
 #creating a visually pleasing table
 purple_urchin_stats_table &lt;- purple_urchin_stats %&gt;% 
-  kable(digits = c(1, 1, 1, 1, 5), #setting the number of digits for each column; similar to `round()`)
+  kable(digits = c(3, 3, 3, 3, 5), #setting the number of digits for each column; similar to `round()`)
         col.names = c(&quot;Treatment&quot;, &quot;Mean (cm)&quot;, &quot;Median (cm)&quot;, &quot;Standard Deviation (cm)&quot;, &quot;Sample Size&quot;), #naming columns
         caption = &quot;Summary statistics for the diameter (size) of purple sea urchins recorded by Santa Barbara Coastal Long Term Ecological Research program divers at the Naples Reef kelp removal experiment site in 2010.&quot;, #giving the table a caption above
         align = &quot;lcccc&quot;) %&gt;%  #aligning the values centrally except for the species column (left aligned)
@@ -283,13 +300,13 @@ Sample Size
 ANNUAL
 </td>
 <td style="text-align:center;">
-5.5
+5.533
 </td>
 <td style="text-align:center;">
 5
 </td>
 <td style="text-align:center;">
-1.9
+1.935
 </td>
 <td style="text-align:center;">
 28961
@@ -300,13 +317,13 @@ ANNUAL
 CONTROL
 </td>
 <td style="text-align:center;">
-5.5
+5.542
 </td>
 <td style="text-align:center;">
 5
 </td>
 <td style="text-align:center;">
-1.9
+1.923
 </td>
 <td style="text-align:center;">
 30252
@@ -314,6 +331,10 @@ CONTROL
 </tr>
 </tbody>
 </table>
+<div id="takeaway-1" class="section level2" number="5.1">
+<h2 number="5.1"><span class="header-section-number">5.1</span> Takeaway</h2>
+<p>Looking at this summary statistics table, there appears to be no clear difference between mean purple urchin sizes at Naples Reef in 2010 in kelp removal and control treatments. The two treatments have very similar mean, median, and standard deviation values, and have fairly similar sample sizes. This means the kelp removal treatment was not likely having an effect on purple urchin size at Naples Reef in 2010.</p>
+</div>
 </div>
 
 

@@ -47,10 +47,10 @@ ggplot(data = urchins, aes(x = SIZE)) + #designating the data and x variable
   scale_fill_manual(values = c("darkviolet", "firebrick3")) + #designating color coding
   facet_wrap(~COMMON_NAME) + #splitting the graph by common name
   labs(x = "Size (cm)", #labeling axes
-       y = "Count")
+       y = "Count",
+       caption = "Histograms of purple and red sea urchin sizes, measured in centimeters.") +
+  theme(plot.caption = element_text(size = 12))
 ```
-
-**Figure 1**: A histogram of purple and red sea urchin sizes, measured in centimeters.
 
 ## Data table of urchin statistics
 
@@ -98,6 +98,8 @@ purple_urchins <- urchins %>%
            SITE == "CARP" ~ "Carpinteria Reef",
            SITE == "MOHK" ~ "Mohawk Reef",
            SITE == "IVEE" ~ "Isla Vista Reef"))
+
+head(purple_urchins) #calling up the dataframe for reference
 ```
 
 ## Visualizing purple urchin counts by year and site

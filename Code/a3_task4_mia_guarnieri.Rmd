@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
 # Overview
-This code wrangles, analyzes, and visualizes data about the mean size of purple urchins in CONTROL (no giant kelp removal) and ANNUAL (annual kelp removal) sections of Naples Reef in 2010. This data was recorded by Santa Barbara Coastal Long Term Ecological Research program divers at five long-term kelp removal experiment sites. Shell diameter (size) was measured in centimeters.
+This code wrangles, analyzes, and visualizes data about the mean size of purple urchins in CONTROL (no giant kelp removal) and ANNUAL (annual kelp removal) treatment groups of Naples Reef in 2010. This data was recorded by Santa Barbara Coastal Long Term Ecological Research program divers at five long-term kelp removal experiment sites. Shell diameter (size) was measured in centimeters.
 
 **Data citation:** Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b. 
 
@@ -50,9 +50,13 @@ purple_urchins_2010 <- urchins %>%
            SITE == "IVEE" ~ "Isla Vista Reef")) %>% 
   filter(YEAR == 2010) %>%  #only keeping observations from within 2010
   filter(SITE_FULL == "Naples Reef") #only keeping observations from Naples Reef
+
+head(purple_urchins_2010) #calling up the dataframe for reference
 ```
 
 # Exploratory histograms and Q-Q plots
+
+These plots explore the spread of purple urchin sizes at Naples Reef in 2010 for both treatments.
 
 ```{r}
 # Histogram for the size distribution of purple urchins at Naples in 2010, separated by treatment (Control and Annual)
@@ -85,7 +89,7 @@ purple_urchin_stats <- urchins %>% #start with the urchins data
 
 #creating a visually pleasing table
 purple_urchin_stats_table <- purple_urchin_stats %>% 
-  kable(digits = c(1, 1, 1, 1, 5), #setting the number of digits for each column; similar to `round()`)
+  kable(digits = c(3, 3, 3, 3, 5), #setting the number of digits for each column; similar to `round()`)
         col.names = c("Treatment", "Mean (cm)", "Median (cm)", "Standard Deviation (cm)", "Sample Size"), #naming columns
         caption = "Summary statistics for the diameter (size) of purple sea urchins recorded by Santa Barbara Coastal Long Term Ecological Research program divers at the Naples Reef kelp removal experiment site in 2010.", #giving the table a caption above
         align = "lcccc") %>%  #aligning the values centrally except for the species column (left aligned)
@@ -94,3 +98,6 @@ purple_urchin_stats_table <- purple_urchin_stats %>%
 purple_urchin_stats_table #calling up the table for reference
 ```
 
+## Takeaway
+
+Looking at this summary statistics table, there appears to be no clear difference between mean purple urchin sizes at Naples Reef in 2010 in kelp removal and control treatments. The two treatments have very similar mean, median, and standard deviation values, and have fairly similar sample sizes. This means the kelp removal treatment was not likely having an effect on purple urchin size at Naples Reef in 2010.

@@ -57,13 +57,17 @@ ggplot(data = urchins, aes(x = SIZE)) + #designating the data and x variable
 The following data table presents summary statistics for red and purple urchin samples, including mean, median, standard deviation, and sample size.
 
 ```{r}
+#getting the summary statistics
 urchin_stats <- urchins %>% #start with the urchins data
   group_by(COMMON_NAME) %>% #group our table by urchin species
   summarize(mean = mean(SIZE), #create a column for the mean of urchin sizes
             median = median(SIZE), #create a column for the median of urchin sizes
             sd = sd(SIZE), #create a column for the standard deviation of urchin sizes
-            n = n()) %>%  #create a column for the sample size of urchin sizes
-  kable(digits = c(2, 2, 2, 2, 5), #setting the number of digits for each column; similar to `round()`)
+            n = n()) #create a column for the sample size of urchin sizes
+
+#creating a visually pleasing table
+urchin_stats_table <- urchin_stats %>% 
+  kable(digits = c(1, 1, 1, 1, 5), #setting the number of digits for each column; similar to `round()`)
         col.names = c("Species", "Mean (cm)", "Median (cm)", "Standard Deviation (cm)", "Sample Size"), #naming columns
         caption = "<center><strong>Urchin size summary statistics</strong></center>", #giving the table a bold, centered title
         escape = FALSE, 
@@ -74,16 +78,17 @@ urchin_stats <- urchins %>% #start with the urchins data
            title_format = "bold", #bolding the title
            footnote_as_chunk = TRUE) #showing the title and caption as one chunk of text
 
-urchin_stats #calling up the table for reference
+urchin_stats_table #calling up the table for reference
 ```
 
+### Takeaways
+
+Mean size for purple urchins was `r round(urchin_stats$mean[1], 1)` cm, which is `r round(urchin_stats$mean[2] - urchin_stats$mean[1], 1)` cm smaller (`r round(((urchin_stats$mean[2] - urchin_stats$mean[1])/mean(urchin_stats$mean))*100, 1)`% smaller) than the mean size for red urchins. Purple urchin data also had a smaller spread around the mean value, based on the histogram visualizations and the lower standard deviation (sd = `r round(urchin_stats$sd[1], 1)` cm) than the red urchin data (sd = `r round(urchin_stats$sd[2], 1)` cm).
 
 
+## Exploring purple urchin counts by site and year
 
-
-
-
-
+### 
 
 
 

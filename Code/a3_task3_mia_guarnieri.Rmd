@@ -14,17 +14,18 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 # Task 3
 
 ## Overview
-This code wrangles, analyzes, and visualizes data about the size frequency distribution of red and purple sea urchins recorded by Santa Barbara Coastal Long Term Ecological Research program divers at five long-term kelp removal experiment sites.
+This code wrangles, analyzes, and visualizes data about the size frequency distribution of red and purple sea urchins recorded by Santa Barbara Coastal Long Term Ecological Research program divers at five long-term kelp removal experiment sites. Shell diameter was measured in centimeters for 50 of each type of urchin.
 
 **Data citation:** Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b. 
 
 ## Setup
 
 ```{r}
-# attach packages
+#attach packages
 library(tidyverse)
 library(here)
 library(janitor)
+library(kableExtra)
 
 #read in the data
 urchins <- read.csv(here("Data", "urchins.csv"))
@@ -34,7 +35,37 @@ head(urchins)
 ```
 
 
-## Data wrangling
+## Size comparisons of red and purple urchins
+
+### Histogram
+
+This faceted histogram compares the distribution of sizes between purple and red urchins across both treatments. 
+
+```{r}
+ggplot(data = urchins, aes(x = SIZE)) + #designating the data and x variable
+  geom_histogram(bins = 10, color = "gray0", aes(fill = COMMON_NAME)) + #selecting a histogram, designating bin number, color coding by species, and adding outlines
+  scale_fill_manual(values = c("darkviolet", "firebrick3")) + #designating color coding
+  facet_wrap(~COMMON_NAME) + #splitting the graph by common name
+  labs(x = "Size (cm)", #labeling axes
+       y = "Count")
+```
+
+**Figure 1**: A histogram of purple and red sea urchin sizes, measured in centimeters.
+
+### Data table of urchin statistics
+
+The following data table presents summary statistics for red and purple urchin samples, including mean, median, standard deviation, and sample size.
+
+```{r}
+
+```
+
+
+
+
+
+
+
 
 
 

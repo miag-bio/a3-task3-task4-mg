@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 # Task 3
 
 ## Overview
-This code wrangles, analyzes, and visualizes data about the size frequency distribution of red and purple sea urchins recorded by Santa Barbara Coastal Long Term Ecological Research program divers at five long-term kelp removal experiment sites. Shell diameter was measured in centimeters for 50 of each type of urchin.
+This code wrangles, analyzes, and visualizes data about the size frequency distribution of red and purple sea urchins recorded by Santa Barbara Coastal Long Term Ecological Research program divers at five long-term kelp removal experiment sites. Shell diameter (size) was measured in centimeters.
 
 **Data citation:** Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b. 
 
@@ -57,7 +57,24 @@ ggplot(data = urchins, aes(x = SIZE)) + #designating the data and x variable
 The following data table presents summary statistics for red and purple urchin samples, including mean, median, standard deviation, and sample size.
 
 ```{r}
+urchin_stats <- urchins %>% #start with the urchins data
+  group_by(COMMON_NAME) %>% #group our table by urchin species
+  summarize(mean = mean(SIZE), #create a column for the mean of urchin sizes
+            median = median(SIZE), #create a column for the median of urchin sizes
+            sd = sd(SIZE), #create a column for the standard deviation of urchin sizes
+            n = n()) %>%  #create a column for the sample size of urchin sizes
+  kable(digits = c(2, 2, 2, 2, 5), #setting the number of digits for each column; similar to `round()`)
+        col.names = c("Species", "Mean (cm)", "Median (cm)", "Standard Deviation (cm)", "Sample Size"), #naming columns
+        caption = "<center><strong>Urchin size summary statistics</strong></center>", #giving the table a bold, centered title
+        escape = FALSE, 
+        align = "lcccc") %>%  #aligning the values centrally except for the species column (left aligned)
+  kable_styling(full_width = FALSE, position = "center") %>% #setting it to not take up the full page width and be center aligned
+  footnote(general = "Summary statistics for the diameter (size) of purple and red sea urchins recorded by Santa Barbara Coastal Long Term Ecological Research program divers at five long-term kelp removal experiment sites.", #adding a table caption with the `footnote()` function
+           general_title = "Table 1:", #titling the table caption
+           title_format = "bold", #bolding the title
+           footnote_as_chunk = TRUE) #showing the title and caption as one chunk of text
 
+urchin_stats #calling up the table for reference
 ```
 
 

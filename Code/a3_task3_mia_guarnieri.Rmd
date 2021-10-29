@@ -1,5 +1,5 @@
 ---
-title: "a3_task3_mia_guarnieri"
+title: "Task 3: Urchin data wrangling and visualization"
 author: "Mia Guarnieri"
 date: "10/29/2021"
 output: 
@@ -11,14 +11,13 @@ output:
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
-# Task 3
 
-## Overview
+# Overview
 This code wrangles, analyzes, and visualizes data about the size frequency distribution of red and purple sea urchins recorded by Santa Barbara Coastal Long Term Ecological Research program divers at five long-term kelp removal experiment sites. Shell diameter (size) was measured in centimeters.
 
 **Data citation:** Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b. 
 
-## Setup
+#Setup
 
 ```{r}
 #attach packages
@@ -26,6 +25,7 @@ library(tidyverse)
 library(here)
 library(janitor)
 library(kableExtra)
+library(lubridate)
 
 #read in the data
 urchins <- read.csv(here("Data", "urchins.csv"))
@@ -35,9 +35,9 @@ head(urchins)
 ```
 
 
-## Size comparisons of red and purple urchins
+# Size comparisons of red and purple urchins
 
-### Histogram
+## Histogram
 
 This faceted histogram compares the distribution of sizes between purple and red urchins across both treatments. 
 
@@ -52,7 +52,7 @@ ggplot(data = urchins, aes(x = SIZE)) + #designating the data and x variable
 
 **Figure 1**: A histogram of purple and red sea urchin sizes, measured in centimeters.
 
-### Data table of urchin statistics
+## Data table of urchin statistics
 
 The following data table presents summary statistics for red and purple urchin samples, including mean, median, standard deviation, and sample size.
 
@@ -69,26 +69,61 @@ urchin_stats <- urchins %>% #start with the urchins data
 urchin_stats_table <- urchin_stats %>% 
   kable(digits = c(1, 1, 1, 1, 5), #setting the number of digits for each column; similar to `round()`)
         col.names = c("Species", "Mean (cm)", "Median (cm)", "Standard Deviation (cm)", "Sample Size"), #naming columns
-        caption = "<center><strong>Urchin size summary statistics</strong></center>", #giving the table a bold, centered title
-        escape = FALSE, 
+        caption = "Summary statistics for the diameter (size) of purple and red sea urchins recorded by Santa Barbara Coastal Long Term Ecological Research program divers at five long-term kelp removal experiment sites.", #giving the table a caption above
         align = "lcccc") %>%  #aligning the values centrally except for the species column (left aligned)
-  kable_styling(full_width = FALSE, position = "center") %>% #setting it to not take up the full page width and be center aligned
-  footnote(general = "Summary statistics for the diameter (size) of purple and red sea urchins recorded by Santa Barbara Coastal Long Term Ecological Research program divers at five long-term kelp removal experiment sites.", #adding a table caption with the `footnote()` function
-           general_title = "Table 1:", #titling the table caption
-           title_format = "bold", #bolding the title
-           footnote_as_chunk = TRUE) #showing the title and caption as one chunk of text
-
+  kable_styling(full_width = FALSE, position = "center") #setting it to not take up the full page width and be center aligned
+  
 urchin_stats_table #calling up the table for reference
 ```
 
-### Takeaways
+## Takeaways
 
 Mean size for purple urchins was `r round(urchin_stats$mean[1], 1)` cm, which is `r round(urchin_stats$mean[2] - urchin_stats$mean[1], 1)` cm smaller (`r round(((urchin_stats$mean[2] - urchin_stats$mean[1])/mean(urchin_stats$mean))*100, 1)`% smaller) than the mean size for red urchins. Purple urchin data also had a smaller spread around the mean value, based on the histogram visualizations and the lower standard deviation (sd = `r round(urchin_stats$sd[1], 1)` cm) than the red urchin data (sd = `r round(urchin_stats$sd[2], 1)` cm).
 
 
-## Exploring purple urchin counts by site and year
+# Exploring purple urchin counts by site and year
 
-### 
+## Wrangling data for purple urchins
+
+In a new data frame called purple_urchins, data is filtered to only include purple urchin observations, and new columns are added with the full name of sampling sites and the year of sampling.
+
+```{r}
+purple_urchins <- urchins %>% 
+  filter(COMMON_NAME == "Purple Urchin") %>% 
+  mutate(DATE = mdy(DATE), #converting DATE column to class "Date"
+         YEAR = year(DATE), #creating a new column with just the year
+         SITE_FULL = case_when( #add a new column called SITE_FULL with full site names based on abbreviations from the SITE column
+           SITE == "NAPL" ~ "Naples Reef", 
+           SITE == "AQUE" ~ "Arroyo Quemado Reef",
+           SITE == "CARP" ~ "Carpinteria Reef",
+           SITE == "MOHK" ~ "Mohawk Reef",
+           SITE == "IVEE" ~ "Isla Vista Reef"))
+```
+
+## Visualizing purple urchin counts by year and site
+
+This set of histograms will visualize the counts of purple urchins recorded at each sampling site for the years included in the study.
+
+```{r}
+#creating a table with the total number of purple urchins counted at each site per year
+purple_urchins_site_year <- purple_urchins %>% 
+  count(SITE_FULL, YEAR) 
+
+#making a finalized graph of counts of purple urchins recorded at each site over time for the years included in the study. 
+
+ggplot(data = purple_urchins_site_year, aes(x = YEAR, y = n)) + #designating data set and axes
+  geom_col(aes(fill = SITE_FULL), show.legend = FALSE) + #generating a column graph and hiding the legend
+   scale_fill_manual(values = c("salmon", "goldenrod1", "seagreen3", "cornflowerblue", "mediumpurple1")) + #designating color coding
+  facet_wrap(~SITE_FULL) + #splitting graphs up by year
+  labs(x = "Sampling Year",
+       y = "Number of purple urchins",
+       caption = "Counts of purple urchins recorded at each sampling site for the years included in the study") +
+  theme(plot.caption = element_text(size = 12))
+```
+
+## Takeaway
+
+This graph reflects changes in the sample counts of purple urchins at each site for a given year between 2008 and 2020. However, to determine whether these sample count changes are reflective of changes in the true purple urchin population, we must take into account sampling effort, sampling accuracy, and availability of resources. These counts were taken from random transects within each sampling plot. If fewer transects were taken in a given year than the standard number, or transects happened to be taken in areas that purple urchins were avoiding, then the count would be artificially low. The count could also be artificially high if more transects were taken than the standard, or if transects were taken in areas that were attractive to purple urchins (for example, if food is abundant along a certain transect). Lower availability of resources such as people to take the samples or ability to access the sampling area could lead to reduced sampling efforts as well.
 
 
 

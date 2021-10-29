@@ -1,0 +1,41 @@
+---
+title: "a3_task3_mia_guarnieri"
+author: "Mia Guarnieri"
+date: "10/29/2021"
+output: 
+  html_document: 
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+# Task 3
+
+## Overview
+This code wrangles, analyzes, and visualizes data about the size frequency distribution of red and purple sea urchins recorded by Santa Barbara Coastal Long Term Ecological Research program divers at five long-term kelp removal experiment sites.
+
+**Data citation:** Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b. 
+
+## Setup
+
+```{r}
+# attach packages
+library(tidyverse)
+library(here)
+library(janitor)
+
+#read in the data
+urchins <- read.csv(here("Data", "urchins.csv"))
+
+#calling up the dtaframe for reference
+head(urchins)
+```
+
+
+## Data wrangling
+
+
+
+
